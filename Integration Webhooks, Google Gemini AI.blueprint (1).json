@@ -1,0 +1,1464 @@
+{
+    "name": "Integration Webhooks, Google Gemini AI",
+    "flow": [
+        {
+            "id": 1,
+            "module": "gateway:CustomWebHook",
+            "version": 1,
+            "parameters": {
+                "hook": 3350574,
+                "maxResults": null
+            },
+            "mapper": {},
+            "metadata": {
+                "designer": {
+                    "x": 0,
+                    "y": 0
+                },
+                "restore": {
+                    "parameters": {
+                        "hook": {
+                            "data": {
+                                "editable": "true"
+                            },
+                            "label": "Content-generator-webhook"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "hook",
+                        "type": "hook:gateway-webhook",
+                        "label": "Webhook",
+                        "required": true
+                    },
+                    {
+                        "name": "maxResults",
+                        "type": "number",
+                        "label": "Maximum number of results"
+                    }
+                ],
+                "advanced": true
+            }
+        },
+        {
+            "id": 4,
+            "module": "gemini-ai:createACompletionGeminiPro",
+            "version": 1,
+            "parameters": {
+                "__IMTCONN__": 12169242
+            },
+            "mapper": {
+                "model": "gemini-2.5-flash",
+                "contents": [
+                    {
+                        "role": "user",
+                        "parts": [
+                            {
+                                "type": "text",
+                                "text": "Find and analyze the most important ai tools or products that were launched in the past 3-4 days. Your goal is to summarize it in plain language based on reputable sources like Techcrunch, VentureBeat, Open ai etc\nRespond ONLY in valid JSON format like this:\n\n{\n  \"title\": \"Name of the tool or product\",\n  \"Summary\": \"A detailed summary...\",\n  \"url\": \"Direct link or best source about it\"\n}"
+                            }
+                        ]
+                    }
+                ],
+                "system_instruction": {},
+                "generationConfig": {
+                    "thinkingConfig": {}
+                }
+            },
+            "metadata": {
+                "designer": {
+                    "x": 331,
+                    "y": 86
+                },
+                "restore": {
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "label": "My Gemini AI connection",
+                            "data": {
+                                "scoped": "true",
+                                "connection": "gemini-ai-q9zyjp"
+                            }
+                        }
+                    },
+                    "expect": {
+                        "model": {
+                            "mode": "chose",
+                            "label": "Gemini 2.5 Flash"
+                        },
+                        "contents": {
+                            "mode": "chose",
+                            "items": [
+                                {
+                                    "role": {
+                                        "mode": "chose",
+                                        "label": "User"
+                                    },
+                                    "parts": {
+                                        "mode": "chose",
+                                        "items": [
+                                            {
+                                                "type": {
+                                                    "mode": "chose",
+                                                    "label": "Text"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                        "system_instruction": {
+                            "nested": {
+                                "parts": {
+                                    "mode": "chose"
+                                }
+                            }
+                        },
+                        "safetySettings": {
+                            "mode": "chose"
+                        },
+                        "generationConfig": {
+                            "nested": {
+                                "stopSequences": {
+                                    "mode": "chose"
+                                },
+                                "responseModalities": {
+                                    "mode": "chose"
+                                },
+                                "thinkingConfig": {
+                                    "nested": {
+                                        "include_thoughts": {
+                                            "mode": "chose"
+                                        }
+                                    }
+                                },
+                                "responseMimeType": {
+                                    "mode": "chose",
+                                    "label": "Empty"
+                                }
+                            }
+                        },
+                        "url_context": {
+                            "mode": "chose"
+                        },
+                        "google_search_context": {
+                            "mode": "chose"
+                        },
+                        "code_execution": {
+                            "mode": "chose"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:gemini-ai-q9zyjp",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "model",
+                        "type": "select",
+                        "label": "AI Model",
+                        "required": true
+                    },
+                    {
+                        "name": "contents",
+                        "type": "array",
+                        "label": "Messages",
+                        "required": true,
+                        "spec": [
+                            {
+                                "name": "role",
+                                "type": "select",
+                                "label": "Role",
+                                "options": [
+                                    {
+                                        "label": "User",
+                                        "value": "user"
+                                    },
+                                    {
+                                        "label": "Model",
+                                        "value": "model"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "parts",
+                                "spec": [
+                                    {
+                                        "name": "type",
+                                        "type": "select",
+                                        "label": "Message Type",
+                                        "options": [
+                                            {
+                                                "label": "Text",
+                                                "value": "text",
+                                                "nested": [
+                                                    {
+                                                        "name": "text",
+                                                        "type": "text",
+                                                        "label": "Text",
+                                                        "required": false
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "label": "File",
+                                                "value": "file",
+                                                "nested": [
+                                                    {
+                                                        "name": "file_data",
+                                                        "spec": [
+                                                            {
+                                                                "name": "mime_type",
+                                                                "type": "text",
+                                                                "label": "Mime Type",
+                                                                "required": false
+                                                            },
+                                                            {
+                                                                "help": "You get this from the 'Upload a File' module.",
+                                                                "name": "file_uri",
+                                                                "type": "text",
+                                                                "label": "File URI",
+                                                                "required": false
+                                                            }
+                                                        ],
+                                                        "type": "collection",
+                                                        "label": "File Data",
+                                                        "required": false
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "type": "array",
+                                "label": "Parts"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "system_instruction",
+                        "type": "collection",
+                        "label": "System Instructions",
+                        "spec": [
+                            {
+                                "name": "parts",
+                                "type": "array",
+                                "label": "Prompts",
+                                "spec": {
+                                    "spec": [
+                                        {
+                                            "name": "text",
+                                            "type": "text",
+                                            "label": "Value"
+                                        }
+                                    ],
+                                    "type": "collection",
+                                    "label": "Prompt",
+                                    "name": "value"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "name": "safetySettings",
+                        "type": "array",
+                        "label": "Safety Settings",
+                        "spec": [
+                            {
+                                "name": "category",
+                                "type": "select",
+                                "label": "Category",
+                                "options": [
+                                    {
+                                        "label": "Harassment content",
+                                        "value": "HARM_CATEGORY_HARASSMENT"
+                                    },
+                                    {
+                                        "label": "Hate speech and content",
+                                        "value": "HARM_CATEGORY_HATE_SPEECH"
+                                    },
+                                    {
+                                        "label": "Sexually explicit content.",
+                                        "value": "HARM_CATEGORY_SEXUALLY_EXPLICIT"
+                                    },
+                                    {
+                                        "label": "Dangerous content:",
+                                        "value": "HARM_CATEGORY_DANGEROUS_CONTENT"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "threshold",
+                                "type": "select",
+                                "label": "Threshold",
+                                "options": [
+                                    {
+                                        "label": "Block low and above.",
+                                        "value": "BLOCK_LOW_AND_ABOVE"
+                                    },
+                                    {
+                                        "label": "Block medium and above.",
+                                        "value": "BLOCK_MEDIUM_AND_ABOVE"
+                                    },
+                                    {
+                                        "label": "Block only high.",
+                                        "value": "BLOCK_ONLY_HIGH"
+                                    },
+                                    {
+                                        "label": "Block none.",
+                                        "value": "BLOCK_NONE"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "name": "generationConfig",
+                        "type": "collection",
+                        "label": "Generation configurations",
+                        "spec": [
+                            {
+                                "name": "stopSequences",
+                                "type": "array",
+                                "label": "Stop Sequences",
+                                "spec": {
+                                    "type": "text",
+                                    "label": "Stop Sequence",
+                                    "name": "value"
+                                }
+                            },
+                            {
+                                "name": "responseModalities",
+                                "type": "select",
+                                "label": "Response Modalities",
+                                "multiple": true,
+                                "validate": {
+                                    "enum": [
+                                        "text",
+                                        "image"
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "maxOutputTokens",
+                                "type": "number",
+                                "label": "Max Output Tokens"
+                            },
+                            {
+                                "name": "temperature",
+                                "type": "number",
+                                "label": "Temperature",
+                                "validate": {
+                                    "max": 1,
+                                    "min": 0
+                                }
+                            },
+                            {
+                                "name": "topP",
+                                "type": "number",
+                                "label": "Top P",
+                                "validate": {
+                                    "max": 1,
+                                    "min": 0
+                                }
+                            },
+                            {
+                                "name": "topK",
+                                "type": "number",
+                                "label": "Top K"
+                            },
+                            {
+                                "name": "thinkingConfig",
+                                "type": "collection",
+                                "label": "Thinking Config",
+                                "spec": [
+                                    {
+                                        "name": "thinkingBudget",
+                                        "type": "number",
+                                        "label": "Thinking Budget"
+                                    },
+                                    {
+                                        "name": "include_thoughts",
+                                        "type": "boolean",
+                                        "label": "Include Thoughts"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "responseMimeType",
+                                "type": "select",
+                                "label": "Response Mime Type"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "tools",
+                        "type": "any",
+                        "label": "Tools"
+                    },
+                    {
+                        "name": "tool_config",
+                        "type": "any",
+                        "label": "Tool Config"
+                    },
+                    {
+                        "name": "url_context",
+                        "type": "boolean",
+                        "label": "URL Context"
+                    },
+                    {
+                        "name": "google_search_context",
+                        "type": "boolean",
+                        "label": "Google Search Grounding"
+                    },
+                    {
+                        "name": "code_execution",
+                        "type": "boolean",
+                        "label": "Code Execution"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 12,
+            "module": "util:ComposeTransformer",
+            "version": 1,
+            "parameters": {},
+            "mapper": {
+                "value": "{{4.result}}"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 672,
+                    "y": 97
+                },
+                "restore": {},
+                "expect": [
+                    {
+                        "name": "value",
+                        "type": "text",
+                        "label": "Text"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 13,
+            "module": "json:ParseJSON",
+            "version": 1,
+            "parameters": {
+                "type": 454230
+            },
+            "mapper": {
+                "json": "{{`12`}}"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 1012,
+                    "y": 87
+                },
+                "restore": {
+                    "parameters": {
+                        "type": {
+                            "label": "My data structure"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "type",
+                        "type": "udt",
+                        "label": "Data structure"
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "json",
+                        "type": "text",
+                        "label": "JSON string",
+                        "required": true
+                    }
+                ],
+                "interface": [
+                    {
+                        "name": "Title",
+                        "label": null,
+                        "help": "",
+                        "type": "text",
+                        "default": null,
+                        "required": false,
+                        "multiline": false
+                    },
+                    {
+                        "name": "Summary",
+                        "label": null,
+                        "help": "",
+                        "type": "text",
+                        "default": null,
+                        "required": false,
+                        "multiline": false
+                    },
+                    {
+                        "name": "URL",
+                        "label": null,
+                        "help": "",
+                        "type": "text",
+                        "default": null,
+                        "required": false,
+                        "multiline": false
+                    }
+                ]
+            }
+        },
+        {
+            "id": 14,
+            "module": "gemini-ai:createACompletionGeminiPro",
+            "version": 1,
+            "parameters": {
+                "__IMTCONN__": 12170833
+            },
+            "mapper": {
+                "model": "gemini-2.5-flash",
+                "contents": [
+                    {
+                        "role": "user",
+                        "parts": [
+                            {
+                                "type": "text",
+                                "text": "Act like a top tier strategist.\n\nTodays top AI news:\nTitle: {{13.Title}}\nSummary: {{13.Summary}}\nURL: {{13.URL}}\nGENERATE:\nGenerate:\r\n1. Write a 150-word Instagram Reel script in the style of Ishan Sharma, a creator who explains tech and AI news in a clear, casual, and dramatic way that sounds natural in Hinglish.\r\n\r\nFollow this format:\r\n1. Start with a bold hook — something surprising, urgent, or curious\r\n2. Explain what’s happening using short, punchy sentences. Speak directly to the viewer.\r\n3. Highlight one or two stats or pain points if possible\r\n4. Use casual language, clear pauses, and energetic flow. The script should sound good when spoken aloud.\r\n5. End with a strong call to action like:\r\n   - “Comment below and I’ll send you the link”\r\n   - “Tag a friend who needs this”\r\n   - “Follow for more AI updates!”\r\n\r\nTone: conversational, informative, confident, slightly dramatic  \r\nStyle: Hinglish-friendly, high-energy, designed to be spoken\r\n\r\nOnly return the reel script. Do not add titles or formatting.\r\n\r\n\r\n2. A LinkedIn caption summarizing the news. Write in this format:\r\n1. Start with a bold, exciting one-liner that creates curiosity. Use emojis if appropriate (e.g. 🤯🔥)\r\n2. Follow it with 1–2 lines of punchy context, explaining why this is exciting or revolutionary.\r\n3. Add a short bullet list (3–5 points) that explains what’s new / what it does.\r\n4. Close with a question or prompt to encourage comments — something like “What do you think?” or “Would you try this?”\r\n\r\nTone should be:\r\n- Conversational and energetic\r\n- Uses occasional all caps and emojis\r\n- Friendly and human (avoid robotic or corporate tone)\r\n\r\nOnly output the LinkedIn post text. No hashtags or links.\r\n\r\n\r\n"
+                            }
+                        ]
+                    }
+                ],
+                "system_instruction": {},
+                "generationConfig": {
+                    "thinkingConfig": {}
+                }
+            },
+            "metadata": {
+                "designer": {
+                    "x": 1387,
+                    "y": 64
+                },
+                "restore": {
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "label": "My Gemini AI connection",
+                            "data": {
+                                "scoped": "true",
+                                "connection": "gemini-ai-q9zyjp"
+                            }
+                        }
+                    },
+                    "expect": {
+                        "model": {
+                            "mode": "chose",
+                            "label": "Gemini 2.5 Flash"
+                        },
+                        "contents": {
+                            "mode": "chose",
+                            "items": [
+                                {
+                                    "role": {
+                                        "mode": "chose",
+                                        "label": "User"
+                                    },
+                                    "parts": {
+                                        "mode": "chose",
+                                        "items": [
+                                            {
+                                                "type": {
+                                                    "mode": "chose",
+                                                    "label": "Text"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                        "system_instruction": {
+                            "nested": {
+                                "parts": {
+                                    "mode": "chose"
+                                }
+                            }
+                        },
+                        "safetySettings": {
+                            "mode": "chose"
+                        },
+                        "generationConfig": {
+                            "nested": {
+                                "stopSequences": {
+                                    "mode": "chose"
+                                },
+                                "responseModalities": {
+                                    "mode": "chose"
+                                },
+                                "thinkingConfig": {
+                                    "nested": {
+                                        "include_thoughts": {
+                                            "mode": "chose"
+                                        }
+                                    }
+                                },
+                                "responseMimeType": {
+                                    "mode": "chose",
+                                    "label": "Empty"
+                                }
+                            }
+                        },
+                        "url_context": {
+                            "mode": "chose"
+                        },
+                        "google_search_context": {
+                            "mode": "chose"
+                        },
+                        "code_execution": {
+                            "mode": "chose"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:gemini-ai-q9zyjp",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "model",
+                        "type": "select",
+                        "label": "AI Model",
+                        "required": true
+                    },
+                    {
+                        "name": "contents",
+                        "type": "array",
+                        "label": "Messages",
+                        "required": true,
+                        "spec": [
+                            {
+                                "name": "role",
+                                "type": "select",
+                                "label": "Role",
+                                "options": [
+                                    {
+                                        "label": "User",
+                                        "value": "user"
+                                    },
+                                    {
+                                        "label": "Model",
+                                        "value": "model"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "parts",
+                                "spec": [
+                                    {
+                                        "name": "type",
+                                        "type": "select",
+                                        "label": "Message Type",
+                                        "options": [
+                                            {
+                                                "label": "Text",
+                                                "value": "text",
+                                                "nested": [
+                                                    {
+                                                        "name": "text",
+                                                        "type": "text",
+                                                        "label": "Text",
+                                                        "required": false
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "label": "File",
+                                                "value": "file",
+                                                "nested": [
+                                                    {
+                                                        "name": "file_data",
+                                                        "spec": [
+                                                            {
+                                                                "name": "mime_type",
+                                                                "type": "text",
+                                                                "label": "Mime Type",
+                                                                "required": false
+                                                            },
+                                                            {
+                                                                "help": "You get this from the 'Upload a File' module.",
+                                                                "name": "file_uri",
+                                                                "type": "text",
+                                                                "label": "File URI",
+                                                                "required": false
+                                                            }
+                                                        ],
+                                                        "type": "collection",
+                                                        "label": "File Data",
+                                                        "required": false
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "type": "array",
+                                "label": "Parts"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "system_instruction",
+                        "type": "collection",
+                        "label": "System Instructions",
+                        "spec": [
+                            {
+                                "name": "parts",
+                                "type": "array",
+                                "label": "Prompts",
+                                "spec": {
+                                    "spec": [
+                                        {
+                                            "name": "text",
+                                            "type": "text",
+                                            "label": "Value"
+                                        }
+                                    ],
+                                    "type": "collection",
+                                    "label": "Prompt",
+                                    "name": "value"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "name": "safetySettings",
+                        "type": "array",
+                        "label": "Safety Settings",
+                        "spec": [
+                            {
+                                "name": "category",
+                                "type": "select",
+                                "label": "Category",
+                                "options": [
+                                    {
+                                        "label": "Harassment content",
+                                        "value": "HARM_CATEGORY_HARASSMENT"
+                                    },
+                                    {
+                                        "label": "Hate speech and content",
+                                        "value": "HARM_CATEGORY_HATE_SPEECH"
+                                    },
+                                    {
+                                        "label": "Sexually explicit content.",
+                                        "value": "HARM_CATEGORY_SEXUALLY_EXPLICIT"
+                                    },
+                                    {
+                                        "label": "Dangerous content:",
+                                        "value": "HARM_CATEGORY_DANGEROUS_CONTENT"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "threshold",
+                                "type": "select",
+                                "label": "Threshold",
+                                "options": [
+                                    {
+                                        "label": "Block low and above.",
+                                        "value": "BLOCK_LOW_AND_ABOVE"
+                                    },
+                                    {
+                                        "label": "Block medium and above.",
+                                        "value": "BLOCK_MEDIUM_AND_ABOVE"
+                                    },
+                                    {
+                                        "label": "Block only high.",
+                                        "value": "BLOCK_ONLY_HIGH"
+                                    },
+                                    {
+                                        "label": "Block none.",
+                                        "value": "BLOCK_NONE"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "name": "generationConfig",
+                        "type": "collection",
+                        "label": "Generation configurations",
+                        "spec": [
+                            {
+                                "name": "stopSequences",
+                                "type": "array",
+                                "label": "Stop Sequences",
+                                "spec": {
+                                    "type": "text",
+                                    "label": "Stop Sequence",
+                                    "name": "value"
+                                }
+                            },
+                            {
+                                "name": "responseModalities",
+                                "type": "select",
+                                "label": "Response Modalities",
+                                "multiple": true,
+                                "validate": {
+                                    "enum": [
+                                        "text",
+                                        "image"
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "maxOutputTokens",
+                                "type": "number",
+                                "label": "Max Output Tokens"
+                            },
+                            {
+                                "name": "temperature",
+                                "type": "number",
+                                "label": "Temperature",
+                                "validate": {
+                                    "max": 1,
+                                    "min": 0
+                                }
+                            },
+                            {
+                                "name": "topP",
+                                "type": "number",
+                                "label": "Top P",
+                                "validate": {
+                                    "max": 1,
+                                    "min": 0
+                                }
+                            },
+                            {
+                                "name": "topK",
+                                "type": "number",
+                                "label": "Top K"
+                            },
+                            {
+                                "name": "thinkingConfig",
+                                "type": "collection",
+                                "label": "Thinking Config",
+                                "spec": [
+                                    {
+                                        "name": "thinkingBudget",
+                                        "type": "number",
+                                        "label": "Thinking Budget"
+                                    },
+                                    {
+                                        "name": "include_thoughts",
+                                        "type": "boolean",
+                                        "label": "Include Thoughts"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "responseMimeType",
+                                "type": "select",
+                                "label": "Response Mime Type"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "tools",
+                        "type": "any",
+                        "label": "Tools"
+                    },
+                    {
+                        "name": "tool_config",
+                        "type": "any",
+                        "label": "Tool Config"
+                    },
+                    {
+                        "name": "url_context",
+                        "type": "boolean",
+                        "label": "URL Context"
+                    },
+                    {
+                        "name": "google_search_context",
+                        "type": "boolean",
+                        "label": "Google Search Grounding"
+                    },
+                    {
+                        "name": "code_execution",
+                        "type": "boolean",
+                        "label": "Code Execution"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 24,
+            "module": "discord:createMessage",
+            "version": 2,
+            "parameters": {
+                "__IMTCONN__": 12172270
+            },
+            "mapper": {
+                "select": "channel",
+                "content": "{{14.result}}",
+                "message_reference": {},
+                "channelId": "1425436239045070962"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 1811,
+                    "y": 73
+                },
+                "restore": {
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "label": "My Discord connection (Make (team1278341651986911253))",
+                            "data": {
+                                "scoped": "true",
+                                "connection": "discord"
+                            }
+                        }
+                    },
+                    "expect": {
+                        "select": {
+                            "label": "Send a Message to a Channel"
+                        },
+                        "tts": {
+                            "mode": "chose"
+                        },
+                        "embeds": {
+                            "mode": "chose"
+                        },
+                        "sticker_ids": {
+                            "mode": "chose"
+                        },
+                        "components": {
+                            "mode": "chose"
+                        },
+                        "files": {
+                            "mode": "chose"
+                        },
+                        "channelId": {
+                            "mode": "edit"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:discord",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "select",
+                        "type": "select",
+                        "label": "Choose a Method",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "channel",
+                                "thread",
+                                "user"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "content",
+                        "type": "text",
+                        "label": "Message"
+                    },
+                    {
+                        "name": "tts",
+                        "type": "boolean",
+                        "label": "Is TTS message"
+                    },
+                    {
+                        "name": "embeds",
+                        "type": "array",
+                        "label": "Embeds",
+                        "spec": [
+                            {
+                                "name": "title",
+                                "type": "text",
+                                "label": "Title"
+                            },
+                            {
+                                "name": "type",
+                                "type": "text",
+                                "label": "Type"
+                            },
+                            {
+                                "name": "description",
+                                "type": "text",
+                                "label": "Description"
+                            },
+                            {
+                                "name": "url",
+                                "type": "url",
+                                "label": "URL"
+                            },
+                            {
+                                "name": "timestamp",
+                                "type": "date",
+                                "label": "Timestamp"
+                            },
+                            {
+                                "name": "color",
+                                "type": "uinteger",
+                                "label": "Color"
+                            },
+                            {
+                                "name": "footer",
+                                "spec": [
+                                    {
+                                        "name": "text",
+                                        "type": "text",
+                                        "label": "Text"
+                                    },
+                                    {
+                                        "name": "icon_url",
+                                        "type": "url",
+                                        "label": "Icon URL"
+                                    },
+                                    {
+                                        "name": "proxy_icon_url",
+                                        "type": "url",
+                                        "label": "Proxy Icon URL"
+                                    }
+                                ],
+                                "type": "collection",
+                                "label": "Footer"
+                            },
+                            {
+                                "name": "image",
+                                "spec": [
+                                    {
+                                        "name": "url",
+                                        "type": "url",
+                                        "label": "URL"
+                                    },
+                                    {
+                                        "name": "proxy_url",
+                                        "type": "url",
+                                        "label": "Proxy URL"
+                                    },
+                                    {
+                                        "name": "height",
+                                        "type": "uinteger",
+                                        "label": "Height"
+                                    },
+                                    {
+                                        "name": "width",
+                                        "type": "uinteger",
+                                        "label": "Width"
+                                    }
+                                ],
+                                "type": "collection",
+                                "label": "Image"
+                            },
+                            {
+                                "name": "thumbnail",
+                                "spec": [
+                                    {
+                                        "name": "url",
+                                        "type": "url",
+                                        "label": "URL"
+                                    },
+                                    {
+                                        "name": "proxy_url",
+                                        "type": "url",
+                                        "label": "Proxy URL"
+                                    },
+                                    {
+                                        "name": "height",
+                                        "type": "uinteger",
+                                        "label": "Height"
+                                    },
+                                    {
+                                        "name": "width",
+                                        "type": "uinteger",
+                                        "label": "Width"
+                                    }
+                                ],
+                                "type": "collection",
+                                "label": "Thumbnail"
+                            },
+                            {
+                                "name": "video",
+                                "spec": [
+                                    {
+                                        "name": "url",
+                                        "type": "url",
+                                        "label": "URL"
+                                    },
+                                    {
+                                        "name": "height",
+                                        "type": "uinteger",
+                                        "label": "Height"
+                                    },
+                                    {
+                                        "name": "width",
+                                        "type": "uinteger",
+                                        "label": "Width"
+                                    }
+                                ],
+                                "type": "collection",
+                                "label": "Video"
+                            },
+                            {
+                                "name": "provider",
+                                "spec": [
+                                    {
+                                        "name": "name",
+                                        "type": "text",
+                                        "label": "Name"
+                                    },
+                                    {
+                                        "name": "url",
+                                        "type": "url",
+                                        "label": "URL"
+                                    }
+                                ],
+                                "type": "collection",
+                                "label": "Provider"
+                            },
+                            {
+                                "name": "author",
+                                "spec": [
+                                    {
+                                        "name": "name",
+                                        "type": "text",
+                                        "label": "Name"
+                                    },
+                                    {
+                                        "name": "url",
+                                        "type": "url",
+                                        "label": "URL"
+                                    },
+                                    {
+                                        "name": "icon_url",
+                                        "type": "url",
+                                        "label": "Icon URL"
+                                    },
+                                    {
+                                        "name": "proxy_icon_url",
+                                        "type": "url",
+                                        "label": "Proxy Icon URL"
+                                    }
+                                ],
+                                "type": "collection",
+                                "label": "Author"
+                            },
+                            {
+                                "name": "fields",
+                                "spec": [
+                                    {
+                                        "name": "name",
+                                        "type": "text",
+                                        "label": "Name"
+                                    },
+                                    {
+                                        "name": "value",
+                                        "type": "text",
+                                        "label": "Value"
+                                    },
+                                    {
+                                        "name": "inline",
+                                        "type": "boolean",
+                                        "label": "Inline Flag"
+                                    }
+                                ],
+                                "type": "array",
+                                "label": "Fields"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "sticker_ids",
+                        "type": "array",
+                        "label": "Stickers",
+                        "spec": [
+                            {
+                                "name": "id",
+                                "type": "text",
+                                "label": "Sticker ID",
+                                "required": true
+                            }
+                        ]
+                    },
+                    {
+                        "name": "components",
+                        "type": "array",
+                        "label": "Components",
+                        "spec": [
+                            {
+                                "name": "type",
+                                "type": "select",
+                                "label": "Component Type",
+                                "options": [
+                                    {
+                                        "label": "A New Row",
+                                        "value": 1,
+                                        "nested": [
+                                            {
+                                                "name": "components",
+                                                "spec": [
+                                                    {
+                                                        "name": "type",
+                                                        "type": "select",
+                                                        "label": "Row Component Type",
+                                                        "options": [
+                                                            {
+                                                                "label": "Button",
+                                                                "value": 2,
+                                                                "nested": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "type": "select",
+                                                                        "label": "Style",
+                                                                        "options": [
+                                                                            {
+                                                                                "label": "Primary (blurple)",
+                                                                                "value": 1,
+                                                                                "nested": [
+                                                                                    {
+                                                                                        "help": "A developer-defined identifier for the button, max 100 characters.",
+                                                                                        "name": "custom_id",
+                                                                                        "type": "text",
+                                                                                        "label": "Custom ID",
+                                                                                        "required": true
+                                                                                    }
+                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "label": "Secondary (grey)",
+                                                                                "value": 2,
+                                                                                "nested": [
+                                                                                    {
+                                                                                        "help": "A developer-defined identifier for the button, max 100 characters.",
+                                                                                        "name": "custom_id",
+                                                                                        "type": "text",
+                                                                                        "label": "Custom ID",
+                                                                                        "required": true
+                                                                                    }
+                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "label": "Success (green)",
+                                                                                "value": 3,
+                                                                                "nested": [
+                                                                                    {
+                                                                                        "help": "A developer-defined identifier for the button, max 100 characters.",
+                                                                                        "name": "custom_id",
+                                                                                        "type": "text",
+                                                                                        "label": "Custom ID",
+                                                                                        "required": true
+                                                                                    }
+                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "label": "Danger (red)",
+                                                                                "value": 4,
+                                                                                "nested": [
+                                                                                    {
+                                                                                        "help": "A developer-defined identifier for the button, max 100 characters.",
+                                                                                        "name": "custom_id",
+                                                                                        "type": "text",
+                                                                                        "label": "Custom ID",
+                                                                                        "required": true
+                                                                                    }
+                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "label": "Link (grey)",
+                                                                                "value": 5,
+                                                                                "nested": [
+                                                                                    {
+                                                                                        "help": "A URL for link-style buttons.",
+                                                                                        "name": "url",
+                                                                                        "type": "url",
+                                                                                        "label": "URL",
+                                                                                        "required": true
+                                                                                    }
+                                                                                ]
+                                                                            }
+                                                                        ],
+                                                                        "required": true
+                                                                    },
+                                                                    {
+                                                                        "help": "Text that appears on the button, max 80 characters.",
+                                                                        "name": "label",
+                                                                        "type": "text",
+                                                                        "label": "Label"
+                                                                    },
+                                                                    {
+                                                                        "name": "disabled",
+                                                                        "type": "boolean",
+                                                                        "label": "Disabled"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "label": "Select Menu",
+                                                                "value": 3,
+                                                                "nested": [
+                                                                    {
+                                                                        "help": "A developer-defined identifier for the button, max 100 characters.",
+                                                                        "name": "custom_id",
+                                                                        "type": "text",
+                                                                        "label": "Custom ID",
+                                                                        "required": true
+                                                                    },
+                                                                    {
+                                                                        "name": "options",
+                                                                        "spec": [
+                                                                            {
+                                                                                "help": "The user-facing name of the option, max 100 characters.",
+                                                                                "name": "label",
+                                                                                "type": "text",
+                                                                                "label": "Label",
+                                                                                "required": true
+                                                                            },
+                                                                            {
+                                                                                "help": "The dev-defined value of the option, max 100 characters.",
+                                                                                "name": "value",
+                                                                                "type": "text",
+                                                                                "label": "Value",
+                                                                                "required": true
+                                                                            },
+                                                                            {
+                                                                                "help": "An additional description of the option, max 100 characters.",
+                                                                                "name": "description",
+                                                                                "type": "text",
+                                                                                "label": "Description"
+                                                                            },
+                                                                            {
+                                                                                "name": "default",
+                                                                                "type": "boolean",
+                                                                                "label": "Default"
+                                                                            }
+                                                                        ],
+                                                                        "type": "array",
+                                                                        "label": "Options",
+                                                                        "required": true,
+                                                                        "validate": {
+                                                                            "maxItems": 25
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "help": "Custom placeholder text if nothing is selected, max 150 characters.",
+                                                                        "name": "placeholder",
+                                                                        "type": "text",
+                                                                        "label": "Placeholder"
+                                                                    },
+                                                                    {
+                                                                        "help": "The minimum number of items that must be chosen; default 1, min 0, max 2.",
+                                                                        "name": "min_values",
+                                                                        "type": "uinteger",
+                                                                        "label": "Minimum values"
+                                                                    },
+                                                                    {
+                                                                        "help": "The maximum number of items that must be chosen; default 1, max 25.",
+                                                                        "name": "max_values",
+                                                                        "type": "uinteger",
+                                                                        "label": "Maximum values"
+                                                                    },
+                                                                    {
+                                                                        "name": "disabled",
+                                                                        "type": "boolean",
+                                                                        "label": "Disabled"
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        "required": true
+                                                    }
+                                                ],
+                                                "type": "array",
+                                                "label": "Row Components",
+                                                "required": true
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "required": true
+                            }
+                        ]
+                    },
+                    {
+                        "name": "files",
+                        "type": "array",
+                        "label": "Files",
+                        "spec": [
+                            {
+                                "name": "filename",
+                                "type": "filename",
+                                "label": "File Name",
+                                "required": true,
+                                "semantic": "file:name"
+                            },
+                            {
+                                "name": "data",
+                                "type": "buffer",
+                                "label": "Data",
+                                "required": true,
+                                "semantic": "file:data"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "message_reference",
+                        "type": "collection",
+                        "label": "Message Reference",
+                        "spec": [
+                            {
+                                "name": "message_id",
+                                "type": "text",
+                                "label": "Message ID"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "channelId",
+                        "type": "select",
+                        "label": "Channel ID",
+                        "required": true
+                    }
+                ]
+            }
+        }
+    ],
+    "metadata": {
+        "instant": true,
+        "version": 1,
+        "scenario": {
+            "roundtrips": 1,
+            "maxErrors": 3,
+            "autoCommit": true,
+            "autoCommitTriggerLast": true,
+            "sequential": false,
+            "slots": null,
+            "confidential": false,
+            "dataloss": false,
+            "dlq": false,
+            "freshVariables": false
+        },
+        "designer": {
+            "orphans": []
+        },
+        "zone": "eu2.make.com",
+        "notes": []
+    }
+}
