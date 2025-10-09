@@ -8,9 +8,9 @@ But the real product story isn't the news itself; it's the workflow that deliver
 
 This agent breaks down the task of content creation into reliable, autonomous steps. Here’s the architecture and the Product Logic behind each node:"
 
-The Agentic Workflow Breakdown (Highlighting Decisions):
+The Agentic Workflow Breakdown:
 
-(Attach your workflow screenshot here)
+
 
 🔴 Webhook (Trigger): The Input Gate. This webhook is connected to a news source. My design decision was to use a simple, universal trigger that can be scaled to any RSS feed or database, making the agent highly versatile.
 
@@ -43,7 +43,6 @@ Here's why you should be excited:
 
 What do you think this means for the future of mobile apps and personal assistants? Would YOU like a phone that smart? Let me know below!):
 
-(Paste your agent's notification here: The Hindi/English Gemini Nano Pro message)
 
 Conclusion & Call to Action:
 
